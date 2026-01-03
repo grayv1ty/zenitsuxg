@@ -1,0 +1,38 @@
+{
+  "events": [
+    {
+      "id": "event-1",
+      "title": "ZenitsuX Gaming - Шинэ оны мэнд",
+      "startTime": "2026-01-02T22:10:00-06:00",
+      "prizes": [
+        {
+          "diamonds": 1160,
+          "winners": ["E.O. Delgermurun"]
+        },
+        {
+          "diamonds": 1160,
+          "winners": ["Misheel Bymbadorj"]
+        },
+        {
+          "diamonds": 500,
+          "winners": ["Amarkhuu Enkhamar"]
+        }
+      ]
+    },
+    {
+      "id": "event-2",
+      "title": "ZenitsuX Gaming - 1 сарын хаялага",
+      "startTime": "2026-01-30T22:10:00-06:00",
+      "prizes": [
+        {
+          "diamonds": 1160,
+          "winners": []
+        },
+        {
+          "diamonds": 1160,
+          "winners": []
+        }
+      ]
+    }
+  ]
+}
