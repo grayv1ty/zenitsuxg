@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 
 const roles = [
@@ -13,9 +13,18 @@ const roles = [
 
 export default function Home() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [autoIndex, setAutoIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAutoIndex((prev) => (prev + 1) % roles.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const getTextStyle = (index: number) => {
-    const activeIndex = hoveredIndex ?? 0;
+    const activeIndex = hoveredIndex ?? autoIndex;
     const diff = index - activeIndex;
     
     if (diff === 0) {
@@ -51,22 +60,25 @@ export default function Home() {
   return (
     <div className="min-h-screen w-full relative overflow-hidden flex flex-col items-center justify-center gap-12 p-4">
       <div className="flex flex-row items-center gap-2 md:gap-4 w-fit mx-auto">
-        <span className="text-[20pt] font-sans font-black leading-none md:text-[4rem]">
+        <span className="text-[20pt] font-sans font-black leading-none md:text-[4rem] text-yellow-400">
           ZenitsuX
         </span>
         <div className="w-[150px] md:w-[400px] h-[20pt] md:h-[4rem] flex items-center relative ">
-          {roles.map((role, index) => (
-            <span 
-              key={role.name}
-              className={`absolute text-[20pt] font-sans font-black leading-none md:text-[4rem] transition-all duration-500 ease-out ${getTextStyle(index)}`}
-              style={{
-                WebkitTextStroke: '2px white',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              {role.name}
-            </span>
-          ))}
+          {roles.map((role, index) => {
+            const isActive = (hoveredIndex ?? autoIndex) === index;
+            return (
+              <span 
+                key={role.name}
+                className={`absolute text-[20pt] font-sans font-black leading-none md:text-[4rem] transition-all duration-500 ease-out ${getTextStyle(index)}`}
+                style={{
+                  WebkitTextStroke: isActive ? '2px #facc15' : '2px white',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                {role.name}
+              </span>
+            );
+          })}
         </div>
       </div>
 
@@ -78,7 +90,7 @@ export default function Home() {
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
               className={`relative w-16 h-16 md:w-24 md:h-24 transition-all duration-500 cursor-pointer ${
-                hoveredIndex === index ? "grayscale-0 scale-110" : "grayscale"
+                (hoveredIndex ?? autoIndex) === index ? "grayscale-0 scale-110" : "grayscale"
               }`}
             >
               <Image

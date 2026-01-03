@@ -123,7 +123,7 @@ export function DockMenu() {
                       "size-12 rounded-full"
                     )}
                   >
-                    <item.icon className="size-4 text-pink-500" />
+                    <item.icon className="size-4 text-yellow-400" />
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent>
