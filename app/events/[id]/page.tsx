@@ -81,7 +81,7 @@ const Countdown = ({ targetDate }: { targetDate: string }) => {
       ].map((item) => (
         <div
           key={item.label}
-          className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 text-white"
+          className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 text-black"
         >
           <span className="text-3xl font-bold">{item.value}</span>
           <span className="text-xs opacity-80">{item.label}</span>
@@ -126,7 +126,7 @@ const RandomSelector = () => {
       <Button
         onClick={pickRandom}
         disabled={isSpinning}
-        className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
+        className="w-full bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-bold"
         size="lg"
       >
         {isSpinning ? "🎲 Сонгож байна..." : "🎲 Random сонгох"}
@@ -155,10 +155,10 @@ const TopFansList = () => {
         {TOP_FANS.map((fan, index) => (
           <div
             key={index}
-            className="p-4 rounded-lg bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 dark:border-pink-500/20"
+            className="p-4 rounded-lg bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border border-yellow-400/20 dark:border-amber-500/20"
           >
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-purple-600 dark:text-purple-400">
+              <span className="text-sm font-bold text-yellow-600 dark:text-yellow-400">
                 #{index + 1}
               </span>
               <p className="font-medium text-sm">{fan.fullname}</p>
@@ -177,13 +177,13 @@ const WinnerList = ({ prizes }: { prizes: Event["prizes"] }) => {
       {prizes.map((prize, index) => (
         <div
           key={index}
-          className="p-6 rounded-xl border bg-gradient-to-br from-pink-500/10 to-purple-500/10 border-pink-500/20 dark:border-purple-500/20"
+          className="p-6 rounded-xl border bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border-yellow-400/20 dark:border-amber-500/20"
         >
           <div className="flex items-center justify-between mb-3">
             <span className="text-lg font-bold">
               Шагнал #{index + 1}
             </span>
-            <span className="text-lg font-bold text-pink-500">
+            <span className="text-lg font-bold text-yellow-500">
               💎 {prize.diamonds} Diamonds
             </span>
           </div>
@@ -250,7 +250,7 @@ export default function EventDetailPage() {
               className={cn(
                 "text-sm px-3 py-1 rounded-full font-medium",
                 isUpcoming
-                  ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                  ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
                   : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
               )}
             >
@@ -262,12 +262,12 @@ export default function EventDetailPage() {
         <div className="space-y-8">
           {isUpcoming ? (
             <>
-              <div className="p-8 rounded-2xl bg-gradient-to-br from-pink-500/10 to-purple-500/10 border border-pink-500/20 dark:border-purple-500/20">
+              <div className="p-8 rounded-2xl bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border border-yellow-400/20 dark:border-amber-500/20">
                 <h2 className="text-2xl font-bold text-center mb-6">⏰ Эхлэх хүртэл</h2>
                 <Countdown targetDate={event.startTime} />
               </div>
 
-              <div className="p-8 rounded-2xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20 dark:border-cyan-500/20">
+              <div className="p-8 rounded-2xl bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border border-yellow-400/20 dark:border-amber-500/20">
                 <h2 className="text-2xl font-bold text-center mb-6">🎲 Random Сонголт</h2>
                 <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
                   Топ фэнүүдээс random хүн сонгох
@@ -281,12 +281,12 @@ export default function EventDetailPage() {
                   {event.prizes.map((prize, index) => (
                     <div
                       key={index}
-                      className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-pink-500/10 to-purple-500/10"
+                      className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-yellow-400/10 to-amber-500/10"
                     >
                       <span className="font-medium">
                         Шагнал #{index + 1}
                       </span>
-                      <span className="font-bold text-pink-500">💎 {prize.diamonds}</span>
+                      <span className="font-bold text-yellow-500">💎 {prize.diamonds}</span>
                     </div>
                   ))}
                 </div>

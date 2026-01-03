@@ -42,7 +42,7 @@ const EventCard = ({ event }: { event: Event }) => {
           <div
             className="flex size-10 items-center justify-center rounded-2xl"
             style={{
-              backgroundColor: isUpcoming ? "#FF3D71" : "#00C9A7",
+              backgroundColor: isUpcoming ? "#facc15" : "#22c55e",
             }}
           >
             <span className="text-lg">🎁</span>
@@ -58,7 +58,7 @@ const EventCard = ({ event }: { event: Event }) => {
               <span 
                 className={cn(
                   "text-xs px-2 py-0.5 rounded-full font-medium",
-                  isUpcoming ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                  isUpcoming ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                 )}
               >
                 {statusText}
