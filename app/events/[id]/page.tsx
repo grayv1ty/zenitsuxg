@@ -1,12 +1,13 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import moment from "moment";
 import "moment/locale/mn";
 import eventsData from "@/data/events.json";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Confetti, type ConfettiRef } from "@/components/ui/confetti";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -112,7 +113,7 @@ const RandomSelector = () => {
 
   return (
     <div className="max-w-md mx-auto">
-      <div className="p-6 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 dark:border-purple-500/20 mb-4">
+      <div className="p-6 rounded-xl bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border border-yellow-400/20 dark:border-amber-500/20 mb-4">
         {selectedFan ? (
           <div className="text-center">
             <h3 className="text-2xl font-bold mb-2">{selectedFan.fullname}</h3>
@@ -171,9 +172,30 @@ const TopFansList = () => {
 };
 
 const WinnerList = ({ prizes }: { prizes: Event["prizes"] }) => {
+  const confettiRef = useRef<ConfettiRef>(null);
+
+  useEffect(() => {
+    // Fire confetti when the winner list is displayed
+    const timer = setTimeout(() => {
+      confettiRef.current?.fire({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 },
+        colors: ["#facc15", "#fbbf24", "#f59e0b", "#d97706", "#b45309"],
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 relative">
       <h2 className="text-2xl font-bold text-center mb-6">🏆 Азтанууд</h2>
+      <Confetti
+        ref={confettiRef}
+        className="pointer-events-none absolute inset-0 z-50 w-full"
+        manualstart
+      />
       {prizes.map((prize, index) => (
         <div
           key={index}
@@ -275,7 +297,7 @@ export default function EventDetailPage() {
                 <RandomSelector />
               </div>
 
-              <div className="p-8 rounded-2xl bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+              <div className="p-8 rounded-2xl bg-yellow-50/50 dark:bg-yellow-900/10 border border-yellow-200/50 dark:border-yellow-700/30">
                 <h2 className="text-xl font-bold text-center mb-4">🏆 Шагналууд</h2>
                 <div className="space-y-3">
                   {event.prizes.map((prize, index) => (
@@ -292,12 +314,12 @@ export default function EventDetailPage() {
                 </div>
               </div>
 
-              <div className="p-8 rounded-2xl bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+              <div className="p-8 rounded-2xl bg-yellow-50/50 dark:bg-yellow-900/10 border border-yellow-200/50 dark:border-yellow-700/30">
                 <TopFansList />
               </div>
             </>
           ) : (
-            <div className="p-8 rounded-2xl bg-white/50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+            <div className="p-8 rounded-2xl bg-yellow-50/50 dark:bg-yellow-900/10 border border-yellow-200/50 dark:border-yellow-700/30">
               <WinnerList prizes={event.prizes} />
             </div>
           )}
