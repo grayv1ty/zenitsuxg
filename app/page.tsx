@@ -12,7 +12,7 @@ export default function Home() {
           ZenitsuX
         </span>
         <div className="w-[150px] md:w-[400px]">
-          <MorphingText texts={["Gaming", "Assasin", "Tank", "Mage", "Marksman", "Fighter"]} className="!h-[20pt] md:!h-[4rem] !mx-0"/>
+          <MorphingText texts={["Gaming", "Assasin", "Tank", "Marksman"]} className="!h-[20pt] md:!h-[4rem] !mx-0"/>
         </div>
       </div>
     </div>
