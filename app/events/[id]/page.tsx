@@ -1,6 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
+import { useState, useEffect } from "react";
 import moment from "moment";
 import "moment/locale/mn";
 import eventsData from "@/data/events.json";
@@ -17,6 +18,7 @@ interface Event {
   id: string;
   title: string;
   startTime: string;
+  postId: string;
   prizes: {
     diamonds: number;
     winners: string[];
@@ -27,26 +29,39 @@ interface Fan {
   fullname: string;
 }
 
-// Top fans list - you can modify this list
-const TOP_FANS: Fan[] = [
-  { fullname: "Давааабаяр Баярaa" },
-  { fullname: "E.O. Delgermurun" },
-  { fullname: "Ðełĝėřmoroņ Tuvshintogs" },
-  { fullname: "И. Өсөхбаяр" },
-  { fullname: "Misheel Bymbadorj" },
-  { fullname: "Галбадрах Отгонсүх" },
-  { fullname: "Г. Хүсэл Баяр" },
-  { fullname: "Amarkhuu Enkhamar" },
-];
-
-// Last updated date for the top fans list
-const TOP_FANS_LAST_UPDATED = "2026-01-03";
-
 export default function EventDetailPage() {
   const params = useParams();
   const eventId = params.id as string;
+  const [topFans, setTopFans] = useState<Fan[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const event = (eventsData.events as Event[]).find((e) => e.id === eventId);
+
+  useEffect(() => {
+    const fetchParticipants = async () => {
+      if (!event?.postId) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `/api/facebook/participants?postId=${event.postId}`
+        );
+        const data = await response.json();
+
+        if (data.success) {
+          setTopFans(data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch participants:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchParticipants();
+  }, [event?.postId]);
 
   if (!event) {
     return (
@@ -92,8 +107,8 @@ export default function EventDetailPage() {
             <UpcomingEventView
               startTime={event.startTime}
               prizes={event.prizes}
-              topFans={TOP_FANS}
-              lastUpdated={TOP_FANS_LAST_UPDATED}
+              topFans={topFans}
+              loading={loading}
             />
           ) : (
             <PastEventView prizes={event.prizes} />

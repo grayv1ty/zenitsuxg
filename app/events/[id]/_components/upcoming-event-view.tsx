@@ -17,14 +17,14 @@ interface UpcomingEventViewProps {
   startTime: string;
   prizes: Prize[];
   topFans: Fan[];
-  lastUpdated: string;
+  loading?: boolean;
 }
 
 export const UpcomingEventView = ({
   startTime,
   prizes,
   topFans,
-  lastUpdated,
+  loading = false,
 }: UpcomingEventViewProps) => {
   return (
     <>
@@ -38,7 +38,13 @@ export const UpcomingEventView = ({
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
           Топ фэнүүдээс random хүн сонгох
         </p>
-        <RandomSelector topFans={topFans} />
+        {loading ? (
+          <div className="text-center py-8">
+            <p className="text-gray-500">Ачааллаж байна...</p>
+          </div>
+        ) : (
+          <RandomSelector topFans={topFans} />
+        )}
       </div>
 
       <div className="p-8 rounded-2xl bg-yellow-50/50 dark:bg-yellow-900/10 border border-yellow-200/50 dark:border-yellow-700/30">
@@ -59,8 +65,16 @@ export const UpcomingEventView = ({
       </div>
 
       <div className="p-8 rounded-2xl bg-yellow-50/50 dark:bg-yellow-900/10 border border-yellow-200/50 dark:border-yellow-700/30">
-        <TopFansList topFans={topFans} lastUpdated={lastUpdated} />
+        {loading ? (
+          <div className="text-center py-8">
+            <h2 className="text-xl font-bold mb-4">👑 Топ Фэнүүд</h2>
+            <p className="text-gray-500">Ачааллаж байна...</p>
+          </div>
+        ) : (
+          <TopFansList topFans={topFans} />
+        )}
       </div>
     </>
   );
 };
+

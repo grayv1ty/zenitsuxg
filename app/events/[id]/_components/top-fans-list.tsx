@@ -1,28 +1,18 @@
 "use client";
 
-import moment from "moment";
-
 interface Fan {
   fullname: string;
 }
 
 interface TopFansListProps {
   topFans: Fan[];
-  lastUpdated: string;
 }
 
-export const TopFansList = ({ topFans, lastUpdated }: TopFansListProps) => {
-  const lastUpdatedFormatted = moment(lastUpdated).format("YYYY-MM-DD");
-  const timeAgo = moment(lastUpdated).fromNow();
-
+export const TopFansList = ({ topFans }: TopFansListProps) => {
   return (
     <div className="max-w-2xl mx-auto">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold">👑 Топ Фэнүүд</h2>
-        <div className="text-xs text-gray-500 dark:text-gray-400">
-          <p>Шинэчлэгдсэн: {lastUpdatedFormatted}</p>
-          <p className="text-right">{timeAgo}</p>
-        </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {topFans.map((fan, index) => (
