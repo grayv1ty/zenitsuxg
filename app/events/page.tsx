@@ -1,7 +1,6 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { AnimatedList } from "@/components/ui/animated-list";
 import eventsData from "@/data/events.json";
 import moment from "moment";
 import "moment/locale/mn";
@@ -83,14 +82,14 @@ export default function EventsPage() {
         <h1 className="text-4xl font-bold text-center mb-8">Эвэнтүүд</h1>
         <div
           className={cn(
-            "relative flex h-[500px] w-full flex-col overflow-hidden rounded-lg p-2"
+            "relative flex h-[500px] w-full flex-col rounded-lg p-2"
           )}
         >
-          <AnimatedList>
+          <div className="flex flex-col gap-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent pr-2">
             {events.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
-          </AnimatedList>
+          </div>
           <div className="from-background pointer-events-none absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t"></div>
         </div>
       </div>

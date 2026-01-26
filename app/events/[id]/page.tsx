@@ -1,15 +1,15 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
 import moment from "moment";
 import "moment/locale/mn";
 import eventsData from "@/data/events.json";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Confetti, type ConfettiRef } from "@/components/ui/confetti";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { EventHeader } from "./_components/event-header";
+import { UpcomingEventView } from "./_components/upcoming-event-view";
+import { PastEventView } from "./_components/past-event-view";
 
 moment.locale("mn");
 
@@ -42,194 +42,10 @@ const TOP_FANS: Fan[] = [
 // Last updated date for the top fans list
 const TOP_FANS_LAST_UPDATED = "2026-01-03";
 
-const Countdown = ({ targetDate }: { targetDate: string }) => {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = moment();
-      const target = moment(targetDate);
-      const duration = moment.duration(target.diff(now));
-
-      if (duration.asMilliseconds() <= 0) {
-        clearInterval(interval);
-        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-      } else {
-        setTimeLeft({
-          days: Math.floor(duration.asDays()),
-          hours: duration.hours(),
-          minutes: duration.minutes(),
-          seconds: duration.seconds(),
-        });
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [targetDate]);
-
-  return (
-    <div className="grid grid-cols-4 gap-4 max-w-md mx-auto">
-      {[
-        { label: "Өдөр", value: timeLeft.days },
-        { label: "Цаг", value: timeLeft.hours },
-        { label: "Минут", value: timeLeft.minutes },
-        { label: "Секунд", value: timeLeft.seconds },
-      ].map((item) => (
-        <div
-          key={item.label}
-          className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 text-black"
-        >
-          <span className="text-3xl font-bold">{item.value}</span>
-          <span className="text-xs opacity-80">{item.label}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const RandomSelector = () => {
-  const [selectedFan, setSelectedFan] = useState<Fan | null>(null);
-  const [isSpinning, setIsSpinning] = useState(false);
-
-  const pickRandom = () => {
-    setIsSpinning(true);
-    let count = 0;
-    const interval = setInterval(() => {
-      const randomIndex = Math.floor(Math.random() * TOP_FANS.length);
-      setSelectedFan(TOP_FANS[randomIndex]);
-      count++;
-
-      if (count > 20) {
-        clearInterval(interval);
-        setIsSpinning(false);
-      }
-    }, 100);
-  };
-
-  return (
-    <div className="max-w-md mx-auto">
-      <div className="p-6 rounded-xl bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border border-yellow-400/20 dark:border-amber-500/20 mb-4">
-        {selectedFan ? (
-          <div className="text-center">
-            <h3 className="text-2xl font-bold mb-2">{selectedFan.fullname}</h3>
-          </div>
-        ) : (
-          <div className="text-center text-gray-500">
-            <p>Товч дарж random сонгох</p>
-          </div>
-        )}
-      </div>
-      <Button
-        onClick={pickRandom}
-        disabled={isSpinning}
-        className="w-full bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-500 hover:to-amber-600 text-black font-bold"
-        size="lg"
-      >
-        {isSpinning ? "🎲 Сонгож байна..." : "🎲 Random сонгох"}
-      </Button>
-      <p className="text-xs text-center mt-2 text-gray-500">
-        Нийт {TOP_FANS.length} топ фэн
-      </p>
-    </div>
-  );
-};
-
-const TopFansList = () => {
-  const lastUpdated = moment(TOP_FANS_LAST_UPDATED).format("YYYY-MM-DD");
-  const timeAgo = moment(TOP_FANS_LAST_UPDATED).fromNow();
-
-  return (
-    <div className="max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold">👑 Топ Фэнүүд</h2>
-        <div className="text-xs text-gray-500 dark:text-gray-400">
-          <p>Шинэчлэгдсэн: {lastUpdated}</p>
-          <p className="text-right">{timeAgo}</p>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {TOP_FANS.map((fan, index) => (
-          <div
-            key={index}
-            className="p-4 rounded-lg bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border border-yellow-400/20 dark:border-amber-500/20"
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-yellow-600 dark:text-yellow-400">
-                #{index + 1}
-              </span>
-              <p className="font-medium text-sm">{fan.fullname}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const WinnerList = ({ prizes }: { prizes: Event["prizes"] }) => {
-  const confettiRef = useRef<ConfettiRef>(null);
-
-  useEffect(() => {
-    // Fire confetti when the winner list is displayed
-    const timer = setTimeout(() => {
-      confettiRef.current?.fire({
-        particleCount: 150,
-        spread: 100,
-        origin: { y: 0.6 },
-        colors: ["#facc15", "#fbbf24", "#f59e0b", "#d97706", "#b45309"],
-      });
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <div className="space-y-4 relative">
-      <h2 className="text-2xl font-bold text-center mb-6">🏆 Азтанууд</h2>
-      <Confetti
-        ref={confettiRef}
-        className="pointer-events-none absolute inset-0 z-50 w-full"
-        manualstart
-      />
-      {prizes.map((prize, index) => (
-        <div
-          key={index}
-          className="p-6 rounded-xl border bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border-yellow-400/20 dark:border-amber-500/20"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-lg font-bold">
-              Шагнал #{index + 1}
-            </span>
-            <span className="text-lg font-bold text-yellow-500">
-              💎 {prize.diamonds} Diamonds
-            </span>
-          </div>
-          <div className="space-y-2">
-            {prize.winners.length > 0 ? (
-              prize.winners.map((winner, winnerIndex) => (
-                <div key={winnerIndex} className="flex items-center gap-2">
-                  <span className="font-medium">{winner}</span>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-sm">Ялагч тодорхойгүй</p>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
 export default function EventDetailPage() {
   const params = useParams();
   const eventId = params.id as string;
-  
+
   const event = (eventsData.events as Event[]).find((e) => e.id === eventId);
 
   if (!event) {
@@ -249,7 +65,10 @@ export default function EventDetailPage() {
 
   const eventMoment = moment(event.startTime);
   const isUpcoming = eventMoment.isAfter(moment());
-  const totalDiamonds = event.prizes.reduce((sum, prize) => sum + prize.diamonds, 0);
+  const totalDiamonds = event.prizes.reduce(
+    (sum, prize) => sum + prize.diamonds,
+    0
+  );
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden p-4 py-20">
@@ -260,68 +79,24 @@ export default function EventDetailPage() {
           </Button>
         </Link>
 
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-4">{event.title}</h1>
-          <div className="flex items-center justify-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-            <span>📅 {eventMoment.format("YYYY-MM-DD HH:mm")}</span>
-            <span>💎 {totalDiamonds} Diamonds</span>
-            <span>🎁 {event.prizes.length} шагнал</span>
-          </div>
-          <div className="mt-4">
-            <span
-              className={cn(
-                "text-sm px-3 py-1 rounded-full font-medium",
-                isUpcoming
-                  ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"
-                  : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-              )}
-            >
-              {isUpcoming ? "Удахгүй" : "Дууссан"}
-            </span>
-          </div>
-        </div>
+        <EventHeader
+          title={event.title}
+          startTime={event.startTime}
+          totalDiamonds={totalDiamonds}
+          prizesCount={event.prizes.length}
+          isUpcoming={isUpcoming}
+        />
 
         <div className="space-y-8">
           {isUpcoming ? (
-            <>
-              <div className="p-8 rounded-2xl bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border border-yellow-400/20 dark:border-amber-500/20">
-                <h2 className="text-2xl font-bold text-center mb-6">⏰ Эхлэх хүртэл</h2>
-                <Countdown targetDate={event.startTime} />
-              </div>
-
-              <div className="p-8 rounded-2xl bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border border-yellow-400/20 dark:border-amber-500/20">
-                <h2 className="text-2xl font-bold text-center mb-6">🎲 Random Сонголт</h2>
-                <p className="text-center text-sm text-gray-600 dark:text-gray-400 mb-6">
-                  Топ фэнүүдээс random хүн сонгох
-                </p>
-                <RandomSelector />
-              </div>
-
-              <div className="p-8 rounded-2xl bg-yellow-50/50 dark:bg-yellow-900/10 border border-yellow-200/50 dark:border-yellow-700/30">
-                <h2 className="text-xl font-bold text-center mb-4">🏆 Шагналууд</h2>
-                <div className="space-y-3">
-                  {event.prizes.map((prize, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-yellow-400/10 to-amber-500/10"
-                    >
-                      <span className="font-medium">
-                        Шагнал #{index + 1}
-                      </span>
-                      <span className="font-bold text-yellow-500">💎 {prize.diamonds}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="p-8 rounded-2xl bg-yellow-50/50 dark:bg-yellow-900/10 border border-yellow-200/50 dark:border-yellow-700/30">
-                <TopFansList />
-              </div>
-            </>
+            <UpcomingEventView
+              startTime={event.startTime}
+              prizes={event.prizes}
+              topFans={TOP_FANS}
+              lastUpdated={TOP_FANS_LAST_UPDATED}
+            />
           ) : (
-            <div className="p-8 rounded-2xl bg-yellow-50/50 dark:bg-yellow-900/10 border border-yellow-200/50 dark:border-yellow-700/30">
-              <WinnerList prizes={event.prizes} />
-            </div>
+            <PastEventView prizes={event.prizes} />
           )}
         </div>
       </div>
