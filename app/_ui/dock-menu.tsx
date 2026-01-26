@@ -57,7 +57,7 @@ const DATA = {
     },
   },
   events: [
-    { href: "/events", icon: Gift, label: "Эвэнтүүд" },
+    { href: "/events", icon: Gift, label: "Эвентүүд" },
   ],
 }
 

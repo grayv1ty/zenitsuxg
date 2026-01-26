@@ -79,7 +79,7 @@ export default function EventsPage() {
   return (
     <div className="min-h-screen w-full relative overflow-hidden flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
-        <h1 className="text-4xl font-bold text-center mb-8">Эвэнтүүд</h1>
+        <h1 className="text-4xl font-bold text-center mb-8">Эвентүүд</h1>
         <div
           className={cn(
             "relative flex h-[500px] w-full flex-col rounded-lg p-2"
