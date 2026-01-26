@@ -24,7 +24,23 @@
       "id": "event-2",
       "title": "🎁 TOP FAN GIVEAWAY - 1 САР 🎁",
       "startTime": "2026-01-30T22:00:00-06:00",
-      "postId": "870447589098241",
+      "postId": "870473995762267",
+      "prizes": [
+        {
+          "diamonds": 1160,
+          "winners": []
+        },
+        {
+          "diamonds": 1160,
+          "winners": []
+        }
+      ]
+    },
+    {
+      "id": "event-3",
+      "title": "🎁 TOP FAN GIVEAWAY - 2 САР 🎁",
+      "startTime": "2026-02-28T22:00:00-06:00",
+      "postId": "870473995762267",
       "prizes": [
         {
           "diamonds": 1160,
