@@ -47,7 +47,23 @@
           "winners": []
         },
         {
-          "diamonds": 1160,
+          "diamonds": 500,
+          "winners": []
+        },
+        {
+          "diamonds": 500,
+          "winners": []
+        },
+        {
+          "diamonds": 300,
+          "winners": []
+        },
+        {
+          "diamonds": 300,
+          "winners": []
+        },
+        {
+          "diamonds": 300,
           "winners": []
         }
       ]
