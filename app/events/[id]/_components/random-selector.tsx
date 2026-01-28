@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { Confetti, type ConfettiRef } from "@/components/ui/confetti";
 
 interface Fan {
   fullname: string;
@@ -16,6 +17,7 @@ export const RandomSelector = ({ topFans }: RandomSelectorProps) => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedFans, setSelectedFans] = useState<Fan[]>([]);
   const [availableFans, setAvailableFans] = useState<Fan[]>(topFans);
+  const confettiRef = useRef<ConfettiRef>(null);
 
   const pickRandom = () => {
     if (availableFans.length === 0) {
@@ -39,12 +41,27 @@ export const RandomSelector = ({ topFans }: RandomSelectorProps) => {
         setSelectedFan(finalSelection);
         setSelectedFans(prev => [...prev, finalSelection]);
         setAvailableFans(prev => prev.filter((_, index) => index !== finalIndex));
+        
+        // Fire confetti effect
+        setTimeout(() => {
+          confettiRef.current?.fire({
+            particleCount: 150,
+            spread: 100,
+            origin: { y: 0.6 },
+            colors: ["#facc15", "#fbbf24", "#f59e0b", "#d97706", "#b45309"],
+          });
+        }, 100);
       }
     }, 100);
   };
 
   return (
-    <div className="max-w-md mx-auto space-y-4">
+    <div className="max-w-md mx-auto space-y-4 relative">
+      <Confetti
+        ref={confettiRef}
+        className="pointer-events-none absolute inset-0 z-50 w-full"
+        manualstart
+      />
       <div className="p-6 rounded-xl bg-gradient-to-br from-yellow-400/10 to-amber-500/10 border border-yellow-400/20 dark:border-amber-500/20">
         {selectedFan ? (
           <div className="text-center">
