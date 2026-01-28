@@ -50,35 +50,47 @@ class FacebookService {
   }
 
   /**
-   * Fetch comments from a Facebook post
+   * Fetch comments from a Facebook post with pagination support
    * @param postId - The Facebook post ID
-   * @param limit - Maximum number of comments to fetch (default: 1000)
-   * @returns Promise with comments data
+   * @param limit - Maximum number of comments per page (default: 1000)
+   * @returns Promise with all comments data
    */
   async getPostComments(
     postId: string,
     limit: number = 1000
   ): Promise<FacebookComment[]> {
     try {
-      const url = `${this.baseUrl}/${postId}/comments?limit=${limit}&filter=stream&access_token=${this.accessToken}`;
+      const allComments: FacebookComment[] = [];
+      let url = `${this.baseUrl}/${postId}/comments?limit=${limit}&filter=stream&access_token=${this.accessToken}`;
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        next: { revalidate: 300 }, // Cache for 5 minutes
-      });
+      while (url) {
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          next: { revalidate: 300 }, // Cache for 5 minutes
+        });
 
-      if (!response.ok) {
-        const error: FacebookError = await response.json();
-        throw new Error(
-          `Facebook API error: ${error.error.message} (Code: ${error.error.code})`
-        );
+        if (!response.ok) {
+          const error: FacebookError = await response.json();
+          throw new Error(
+            `Facebook API error: ${error.error.message} (Code: ${error.error.code})`
+          );
+        }
+
+        const data: FacebookCommentsResponse = await response.json();
+        
+        if (data.data && data.data.length > 0) {
+          allComments.push(...data.data);
+        }
+
+        // Check if there's a next page
+        url = data.paging?.next || "";
       }
 
-      const data: FacebookCommentsResponse = await response.json();
-      return data.data || [];
+      console.log(`Fetched ${allComments.length} total comments from post ${postId}`);
+      return allComments;
     } catch (error) {
       console.error("Error fetching Facebook comments:", error);
       throw error;
