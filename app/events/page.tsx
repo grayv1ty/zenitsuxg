@@ -75,6 +75,11 @@ const EventCard = ({ event }: { event: Event }) => {
 
 export default function EventsPage() {
   const events = eventsData.events as Event[];
+  
+  // Sort events by date in descending order (latest first)
+  const sortedEvents = [...events].sort((a, b) => {
+    return moment(b.startTime).valueOf() - moment(a.startTime).valueOf();
+  });
 
   return (
     <div className="min-h-screen w-full relative overflow-hidden flex items-center justify-center p-4">
@@ -86,7 +91,7 @@ export default function EventsPage() {
           )}
         >
           <div className="flex flex-col gap-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 scrollbar-track-transparent pr-2">
-            {events.map((event) => (
+            {sortedEvents.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}
           </div>
