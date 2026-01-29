@@ -100,7 +100,7 @@ export const RandomSelector = ({ topFans }: RandomSelectorProps) => {
               >
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{fan.fullname}</span>
-                  <span className="text-xs text-gray-500">#{selectedFans.length - index}</span>
+                  <span className="text-xs text-gray-500">#{index + 1}</span>
                 </div>
               </div>
             ))}
