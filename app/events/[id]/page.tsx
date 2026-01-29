@@ -91,6 +91,8 @@ export default async function EventDetailPage({
               prizes={event.prizes}
               topFans={topFans}
               loading={false}
+              eventTitle={event.title}
+              totalDiamonds={totalDiamonds}
             />
           ) : (
             <PastEventView prizes={event.prizes} />

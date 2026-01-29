@@ -8,11 +8,17 @@ interface Fan {
   fullname: string;
 }
 
-interface RandomSelectorProps {
-  topFans: Fan[];
+interface Prize {
+  diamonds: number;
+  winners: string[];
 }
 
-export const RandomSelector = ({ topFans }: RandomSelectorProps) => {
+interface RandomSelectorProps {
+  topFans: Fan[];
+  prizes: Prize[];
+}
+
+export const RandomSelector = ({ topFans, prizes }: RandomSelectorProps) => {
   const [selectedFan, setSelectedFan] = useState<Fan | null>(null);
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedFans, setSelectedFans] = useState<Fan[]>([]);
@@ -93,17 +99,27 @@ export const RandomSelector = ({ topFans }: RandomSelectorProps) => {
             Сонгогдсон фэнүүд:
           </h4>
           <div className="space-y-2">
-            {selectedFans.map((fan, index) => (
-              <div
-                key={index}
-                className="p-3 rounded-lg bg-gradient-to-r from-green-400/10 to-emerald-500/10 border border-green-400/20 dark:border-emerald-500/20"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">{fan.fullname}</span>
-                  <span className="text-xs text-gray-500">#{index + 1}</span>
+            {selectedFans.map((fan, index) => {
+              const prize = prizes[index];
+              return (
+                <div
+                  key={index}
+                  className="p-3 rounded-lg bg-gradient-to-r from-green-400/10 to-emerald-500/10 border border-green-400/20 dark:border-emerald-500/20"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{fan.fullname}</span>
+                    <div className="flex items-center gap-2">
+                      {prize && (
+                        <span className="text-sm font-bold text-yellow-500">
+                          💎 {prize.diamonds}
+                        </span>
+                      )}
+                      <span className="text-xs text-gray-500">#{index + 1}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
