@@ -1,3 +1,5 @@
+'use server';
+
 /**
  * Facebook Graph API Service
  * Handles fetching comments and interactions from Facebook posts
@@ -34,107 +36,105 @@ interface FacebookError {
   };
 }
 
-class FacebookService {
-  private baseUrl = "https://graph.facebook.com/v24.0";
-  private accessToken: string;
-  private myPageId = "109960841810512"; // ZenitsuX Gaming page ID
-  private participantKeyword: string;
+const baseUrl = "https://graph.facebook.com/v24.0";
+const myPageId = "109960841810512"; // ZenitsuX Gaming page ID
 
-  constructor() {
-    this.accessToken = process.env.FACEBOOK_ACCESS_TOKEN || "";
-    this.participantKeyword = process.env.FACEBOOK_PARTICIPANT_KEYWORD || "You are in!";
-    
-    if (!this.accessToken) {
-      console.warn("Facebook access token not configured");
-    }
+function getAccessToken() {
+  const token = process.env.FACEBOOK_ACCESS_TOKEN || "";
+  if (!token) {
+    console.warn("Facebook access token not configured");
   }
+  return token;
+}
 
-  /**
-   * Fetch comments from a Facebook post with pagination support
-   * @param postId - The Facebook post ID
-   * @param limit - Maximum number of comments per page (default: 1000)
-   * @returns Promise with all comments data
-   */
-  async getPostComments(
-    postId: string,
-    limit: number = 1000
-  ): Promise<FacebookComment[]> {
-    try {
-      const allComments: FacebookComment[] = [];
-      let url = `${this.baseUrl}/${postId}/comments?limit=${limit}&filter=stream&access_token=${this.accessToken}`;
+function getParticipantKeyword() {
+  return process.env.FACEBOOK_PARTICIPANT_KEYWORD || "You are in!";
+}
 
-      while (url) {
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          next: { revalidate: 300 }, // Cache for 5 minutes
-        });
 
-        if (!response.ok) {
-          const error: FacebookError = await response.json();
-          throw new Error(
-            `Facebook API error: ${error.error.message} (Code: ${error.error.code})`
-          );
-        }
+/**
+ * Fetch comments from a Facebook post with pagination support
+ */
+async function getPostComments(
+  postId: string,
+  limit: number = 1000
+): Promise<FacebookComment[]> {
+  try {
+    const accessToken = getAccessToken();
+    const allComments: FacebookComment[] = [];
+    const fullPostId = postId
+    let url = `${baseUrl}/${fullPostId}/comments?limit=${limit}&filter=stream&access_token=${accessToken}`;
 
-        const data: FacebookCommentsResponse = await response.json();
-        
-        if (data.data && data.data.length > 0) {
-          allComments.push(...data.data);
-        }
-
-        // Check if there's a next page
-        url = data.paging?.next || "";
-      }
-
-      console.log(`Fetched ${allComments.length} total comments from post ${postId}`);
-      return allComments;
-    } catch (error) {
-      console.error("Error fetching Facebook comments:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Get participants from a post by filtering comments where you replied with the participant keyword
-   * @param postId - The Facebook post ID
-   * @returns Promise with participant names
-   */
-  async getEventParticipants(postId: string): Promise<{ fullname: string }[]> {
-    try {
-      const comments = await this.getPostComments(postId, 1000);
-      const participants: { fullname: string }[] = [];
-      const participantSet = new Set<string>();
-
-      comments.forEach((comment) => {
-        // Check if this is my reply with the participant keyword
-        if (
-          comment.from?.id === this.myPageId &&
-          comment.message.includes(this.participantKeyword)
-        ) {
-          // Extract the participant name from the beginning of the message
-          // Format: "Name Here <keyword> ..."
-          const namePart = comment.message.split(this.participantKeyword)[0].trim();
-          
-          if (namePart && !participantSet.has(namePart)) {
-            participantSet.add(namePart);
-            participants.push({ fullname: namePart });
-          }
-        }
+    while (url) {
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        next: { revalidate: 300 }, // Cache for 5 minutes
       });
 
-      return participants;
-    } catch (error) {
-      console.error("Error getting event participants:", error);
-      throw error;
+      if (!response.ok) {
+        const error: FacebookError = await response.json();
+        console.error(`Failed to fetch comments for post ${postId}:`, error.error.message);
+        return []; // Return empty array instead of throwing
+      }
+
+      const data: FacebookCommentsResponse = await response.json();
+      
+      if (data.data && data.data.length > 0) {
+        allComments.push(...data.data);
+      }
+
+      // Check if there's a next page
+      url = data.paging?.next || "";
     }
+
+    console.log(`Fetched ${allComments.length} total comments from post ${postId}`);
+    return allComments;
+  } catch (error) {
+    console.error("Error fetching Facebook comments:", error);
+    return []; // Return empty array on any error
   }
 }
 
-// Export singleton instance
-export const facebookService = new FacebookService();
+/**
+ * Get participants from a post by filtering comments where you replied with the participant keyword
+ */
+export async function getEventParticipants(postId: string): Promise<{ fullname: string }[]> {
+  // Return empty array if no postId provided
+  if (!postId || postId.trim() === '') {
+    console.log('No post ID provided, returning empty participants list');
+    return [];
+  }
 
-// Export types
-export type { FacebookComment, FacebookCommentsResponse };
+  try {
+    const participantKeyword = getParticipantKeyword();
+    const comments = await getPostComments(postId, 1000);
+    const participants: { fullname: string }[] = [];
+    const participantSet = new Set<string>();
+
+    comments.forEach((comment) => {
+      // Check if this is my reply with the participant keyword
+      if (
+        comment.from?.id === myPageId &&
+        comment.message.includes(participantKeyword)
+      ) {
+        // Extract the participant name from the beginning of the message
+        // Format: "Name Here <keyword> ..."
+        const namePart = comment.message.split(participantKeyword)[0].trim();
+        
+        if (namePart && !participantSet.has(namePart)) {
+          participantSet.add(namePart);
+          participants.push({ fullname: namePart });
+        }
+      }
+    });
+
+    return participants;
+  } catch (error) {
+    console.error("Error getting event participants:", error);
+    // Return empty array instead of throwing to prevent page from crashing
+    return [];
+  }
+}

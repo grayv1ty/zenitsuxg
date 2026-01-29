@@ -1,7 +1,3 @@
-"use client";
-
-import { useParams } from "next/navigation";
-import { useState, useEffect } from "react";
 import moment from "moment";
 import "moment/locale/mn";
 import eventsData from "@/data/events.json";
@@ -11,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { EventHeader } from "./_components/event-header";
 import { UpcomingEventView } from "./_components/upcoming-event-view";
 import { PastEventView } from "./_components/past-event-view";
+import { getEventParticipants } from "@/lib/services/facebook.service";
 
 moment.locale("mn");
 
@@ -29,45 +26,19 @@ interface Fan {
   fullname: string;
 }
 
-export default function EventDetailPage() {
-  const params = useParams();
-  const eventId = params.id as string;
-  const [topFans, setTopFans] = useState<Fan[]>([]);
-  const [loading, setLoading] = useState(true);
-
+export default async function EventDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id: eventId } = await params;
   const event = (eventsData.events as Event[]).find((e) => e.id === eventId);
-
-  useEffect(() => {
-    const fetchParticipants = async () => {
-      if (!event?.postId) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const response = await fetch(
-          `/api/facebook/participants?postId=${event.postId}`
-        );
-        const data = await response.json();
-
-        if (data.success) {
-          setTopFans(data.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch participants:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchParticipants();
-  }, [event?.postId]);
 
   if (!event) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Эвэнт олдсонгүй</h1>
+          <h1 className="text-2xl font-bold mb-4">Эвент олдсонгүй</h1>
           <Link href="/events">
             <Button>
               <ArrowLeft className="mr-2 h-4 w-4" /> Буцах
@@ -76,6 +47,17 @@ export default function EventDetailPage() {
         </div>
       </div>
     );
+  }
+
+  let topFans: Fan[] = [];
+
+  // Fetch participants on the server
+  if (event.postId) {
+    try {
+      topFans = await getEventParticipants(event.postId);
+    } catch (error) {
+      console.error("Failed to fetch participants:", error);
+    }
   }
 
   const eventMoment = moment(event.startTime);
@@ -108,7 +90,7 @@ export default function EventDetailPage() {
               startTime={event.startTime}
               prizes={event.prizes}
               topFans={topFans}
-              loading={loading}
+              loading={false}
             />
           ) : (
             <PastEventView prizes={event.prizes} />
