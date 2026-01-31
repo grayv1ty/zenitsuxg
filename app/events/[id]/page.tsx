@@ -61,7 +61,8 @@ export default async function EventDetailPage({
   }
 
   const eventMoment = moment(event.startTime);
-  const isUpcoming = eventMoment.isAfter(moment());
+  const hasWinners = event.prizes.some(prize => prize.winners && prize.winners.length > 0);
+  const isUpcoming = eventMoment.isAfter(moment()) || !hasWinners;
   const totalDiamonds = event.prizes.reduce(
     (sum, prize) => sum + prize.diamonds,
     0
