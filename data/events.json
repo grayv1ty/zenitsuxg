@@ -51,38 +51,6 @@
           "winners": ["Галбадрах Отгонсүх"]
         }
       ]
-    },
-    {
-      "id": "event-3",
-      "title": "🎁 TOP FAN GIVEAWAY - 3 САР 🎁",
-      "startTime": "2026-03-28T20:00:00+08:00",
-      "postId": "",
-      "prizes": [
-        {
-          "diamonds": 1160,
-          "winners": []
-        },
-        {
-          "diamonds": 500,
-          "winners": []
-        },
-        {
-          "diamonds": 500,
-          "winners": []
-        },
-        {
-          "diamonds": 300,
-          "winners": []
-        },
-        {
-          "diamonds": 300,
-          "winners": []
-        },
-        {
-          "diamonds": 300,
-          "winners": []
-        }
-      ]
     }
   ]
 }
